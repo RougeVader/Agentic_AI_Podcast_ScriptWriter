@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+.vscode/
+.streamlit/
+venv/
+env/
+ENV/
+.python-version

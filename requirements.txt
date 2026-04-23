@@ -1,0 +1,8 @@
+crewai
+langchain
+langchain-community
+streamlit
+duckduckgo-search
+python-dotenv
+tavily-python
+langchain-google-genai
