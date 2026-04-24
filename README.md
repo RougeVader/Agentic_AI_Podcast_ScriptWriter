@@ -1,59 +1,24 @@
 # 🎙️ Agentic AI Podcast ScriptWriter
 
-A professional-grade, multi-agent system designed to research, draft, and critique exhaustive (2000+ word) podcast scripts. Built with **CrewAI**, **Gemini 2.0**, and **Ollama**.
+A professional-grade, multi-agent system designed to research, draft, and critique exhaustive (2000+ word) podcast scripts.
 
-## 🚀 Submission Checklist
-- [x] **GitHub Repository:** Clean code and comprehensive README.
-- [x] **Problem Statement:** Detailed in [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md).
-- [x] **Task Decomposition:** Documented in [SPEC.md](./SPEC.md) and [tasks.py](./tasks.py).
-- [x] **Architecture Diagram:** Visualized in [ARCHITECTURE.md](./ARCHITECTURE.md).
-- [x] **Working Agent:** Integrated with Tavily Search, Gemini Cloud, and Local LLMs.
-- [x] **LLM-as-Judge:** Automated quality scoring and feedback loop.
-- [x] **Hot-Fallback:** Seamlessly switches to local GPU if Cloud API fails.
+## ⚠️ STRICT DEPLOYMENT RULE
+**DO NOT use Vercel or Railway for this application.** 
+- **Vercel/Railway:** These platforms have strict 30-60 second execution timeouts. Because this system is truly **Agentic** (it performs deep research, multi-step reasoning, and segmented writing), it takes 2-5 minutes to produce a masterpiece. Cloud platforms will kill the process before it finishes.
+- **RECOMMENDED:** Use **Streamlit Cloud** or **Local Execution**.
 
-## 🧠 The Problem
-Most AI writing tools produce short, generic summaries (~500 words) because of LLM output limits. This project solves that by using **Segmented Writing & Hard-Concatenation**, forcing the agents to write piece-by-piece to achieve massive, 2000+ word masterpieces with deep technical substance.
+## 🧠 Why Local LLM (Ollama)?
+While we support Gemini 2.0 Cloud, the system is designed to prioritize **Local LLMs (Llama 3.2)** for several professional reasons:
+1. **Bypassing Rate Limits:** Cloud APIs (like Gemini Free Tier) often hit "429 Quota Exceeded" errors during long-form tasks. Local GPUs have no such limits.
+2. **Tool-Calling Stability:** We use Llama 3.2 3B, which is specifically optimized for stable function calling, preventing the "beta endpoint" errors common in Cloud APIs.
+3. **Zero Cost:** Generating 2000+ words per session is token-intensive. Local execution is completely free and private.
 
-## 🛠️ Architecture
-The system employs a sophisticated workflow where each agent has a specific, high-iteration role:
-1. **Researcher:** Investigates via Tavily API to find 15+ deep facts.
-2. **Architect:** Writes five distinct 500+ word segments.
-3. **Judge:** Scores the script and identifies weaknesses.
-4. **Python Assembler:** Manually joins segments to bypass LLM truncation.
+## 🛠️ The "Segmented Writing" Architecture
+Most AI tools produce short summaries because they hit a "1000-word output ceiling." This project solves that by:
+1. **Piecewise Generation:** 5 distinct agents write separate 500-word segments.
+2. **Python Hard-Concatenation:** We join segments using Python code to bypass the LLM's own response limit, ensuring a guaranteed 2000+ word output.
 
-> **Full Diagram:** See [ARCHITECTURE.md](./ARCHITECTURE.md) for the Mermaid flowchart.
-
-## 🔌 Setup Instructions
-1. **Clone the Repo:**
-   ```bash
-   git clone https://github.com/RougeVader/Agentic_AI_Podcast_ScriptWriter.git
-   cd Agentic_AI_Podcast_ScriptWriter
-   ```
-
-2. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Configure Environment:**
-   Create a `.env` file with:
-   ```env
-   GEMINI_API_KEY="your_key_here"
-   TAVILY_API_KEY="your_key_here"
-   ```
-
-4. **(Optional) Local GPU Fallback:**
-   Install [Ollama](https://ollama.com/) and run:
-   ```bash
-   ollama pull llama3.2
-   ```
-
-5. **Run the App:**
-   ```bash
-   streamlit run app.py
-   ```
-
-## 🎥 Flow & Features
-- **Dual-Engine:** Uses Gemini 2.0 Flash-Lite for speed and Llama 3.2 for local privacy/fallback.
-- **Museum-Grade UI:** Streamlit "Producer's Desk" with separate tabs for Script, Analysis, and Research.
-- **Strict Word Counts:** Each segment is monitored to ensure the final product hits the 2000-word goal.
+## 🚀 Setup & Submission
+1. **Local Run:** `streamlit run app.py` (Requires Ollama + `llama3.2`)
+2. **Streamlit Cloud:** Link this GitHub repo to [Streamlit Share](https://share.streamlit.io/).
+3. **Secrets:** Add `GEMINI_API_KEY` and `TAVILY_API_KEY` to the Streamlit Secrets dashboard.

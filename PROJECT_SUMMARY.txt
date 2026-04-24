@@ -1,0 +1,20 @@
+# Project Summary for AI Analysis
+
+**Project Name:** Agentic AI Podcast ScriptWriter
+**Tech Stack:** CrewAI, Streamlit, Gemini 2.0 Flash-Lite, Ollama (Llama 3.2), Tavily Search API.
+
+**Core Innovation:**
+The project solves the "Summarization Bias" in LLMs. Most LLMs refuse to write more than 800-1000 words in a single turn. This system uses a "Piecewise Multi-Agent Workflow" to generate a 2000-2500 word production-ready script.
+
+**Workflow Stages:**
+1. **Investigative Research:** Researcher agent finds 15+ facts via Tavily.
+2. **Segmented Drafting:** Writer agent executes 5 separate tasks (Intro, Origin, Tech, Human, Future).
+3. **Hard-Concatenation:** Python code joins the segment outputs to bypass the LLM response limit.
+4. **LLM-as-Judge:** A Critic agent evaluates the script for word count and depth.
+5. **Dual-Engine Logic:** Seamless switching between Google Cloud and Local NVIDIA GPU (RTX 3050).
+
+**Key Features for Review:**
+- Custom CSS "Producer's Desk" UI with Typewriter font.
+- Resilient Tool-calling (handles JSON-as-string errors automatically).
+- Context-chaining between agents to ensure factual consistency across 2000 words.
+- Multi-Tab layout for separate Script, Critique, and Research views.
