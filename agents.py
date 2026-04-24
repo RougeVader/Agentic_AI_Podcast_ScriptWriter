@@ -10,7 +10,6 @@ load_dotenv()
 @tool("Tavily Search")
 def tavily_search(query: str) -> str:
     """Useful to search the web for information. Input should be a single search query string."""
-    # Handle cases where the LLM might pass a dictionary instead of a string
     if isinstance(query, dict):
         query = query.get("query") or query.get("content") or str(query)
     
@@ -24,52 +23,59 @@ def tavily_search(query: str) -> str:
     except Exception as e:
         return f"Tavily Search failed: {e}"
 
-def get_llm():
-    # Reverting to stable setup without the unsupported 'config' argument
+def get_llm(force_ollama=False):
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    ollama_llm = LLM(model="ollama/llama3.2", base_url="http://localhost:11434")
+    
+    if force_ollama or not gemini_key:
+        return ollama_llm
+    
     return LLM(
-        model="ollama/llama3.2", 
-        base_url="http://localhost:11434"
+        model="gemini/gemini-2.0-flash-lite", 
+        api_key=gemini_key,
+        temperature=0.7
     )
 
-def create_researcher():
+def create_researcher(force_ollama=False):
     return Agent(
-        role='Senior Podcast Researcher',
-        goal='Conduct deep, exhaustive research on {topic}. Find specific facts, dates, controversy, and behind-the-scenes details. DO NOT make up information if the search fails.',
-        backstory='You are a world-class investigative journalist. You never settle for surface-level info. You provide long, detailed research briefs with plenty of substance for the writers.',
+        role='Senior Investigative Researcher',
+        goal='Conduct a deep investigation into {topic}. You MUST find at least 15 distinct facts. Your output MUST be a long, detailed Markdown report. NEVER just say "Go ahead" or "I am ready."',
+        backstory='You are a data-obsessed investigator. You do not talk, you only provide massive amounts of evidence and data points. You hate brevity.',
         verbose=True,
         allow_delegation=False,
         tools=[tavily_search],
-        llm=get_llm(),
+        llm=get_llm(force_ollama),
+        max_iter=10
+    )
+
+def create_writer(force_ollama=False):
+    return Agent(
+        role='Lead Podcast Script Architect',
+        goal='Draft massive conversational script segments for {topic}. You are paid $10 per word. Every point must be expanded into a 5-minute conversation with banter and depth.',
+        backstory='You are a verbose scriptwriter. You never summarize. You take a single fact and weave a long, engaging story around it.',
+        verbose=True,
+        allow_delegation=False,
+        llm=get_llm(force_ollama),
+        max_iter=10
+    )
+
+def create_editor(force_ollama=False):
+    return Agent(
+        role='Executive Producer & Editor',
+        goal='Take the provided script and the critique, and perform a MASSIVE expansion. Your goal is the "Director\'s Cut" – longer, deeper, and more immersive.',
+        backstory='You ensure the script is natural and huge. You add the soul to the data.',
+        verbose=True,
+        allow_delegation=False,
+        llm=get_llm(force_ollama),
         max_iter=5
     )
 
-def create_writer():
-    return Agent(
-        role='Lead Podcast Writer',
-        goal='Draft a compelling, conversational multi-speaker podcast script based directly on the provided research about {topic}.',
-        backstory='You are a veteran scriptwriter for hit conversational podcasts. You know how to write dialogue that sounds natural, witty, and flows smoothly between a Host (Alex) and an Expert Guest (Taylor).',
-        verbose=True,
-        allow_delegation=False,
-        llm=get_llm(),
-        max_iter=3
-    )
-
-def create_editor():
-    return Agent(
-        role='Executive Producer & Editor',
-        goal='Review the draft script about {topic} for pacing, conversational tone, clear speaker labels, and factual accuracy based on the research. Make final edits.',
-        backstory='You are the final set of eyes before recording. You ensure the script is not dry, removes robotic language, and checks that Alex and Taylor sound like real humans conversing.',
-        verbose=True,
-        allow_delegation=False,
-        llm=get_llm()
-    )
-
-def create_judge():
+def create_judge(force_ollama=False):
     return Agent(
         role='Podcast Critic & Quality Judge',
-        goal='Evaluate the final podcast script for {topic} against high industry standards. Provide a score (1-10) and specific feedback on engagement, flow, and accuracy.',
-        backstory='You are a renowned podcast critic. You have high standards for script quality, audience retention, and factual integrity. Your job is to be the final quality gate.',
+        goal='Evaluate the script for {topic} and provide improvement notes. Be harsh about length.',
+        backstory='A critic who believes anything under 2000 words is a failure.',
         verbose=True,
         allow_delegation=False,
-        llm=get_llm()
+        llm=get_llm(force_ollama)
     )

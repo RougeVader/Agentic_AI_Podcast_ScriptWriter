@@ -1,62 +1,41 @@
-# System Architecture: Multi-Agent Podcast Script Writer
+# System Architecture | AI Podcast Script Writer
 
-## High-Level Architecture
-The application follows a modular, agent-based architecture coordinated by the CrewAI framework.
+## High-Level Flow
+The system uses a **Segmented Multi-Agent Architecture** to bypass LLM output limits and ensure high-quality, long-form content (2000+ words).
 
 ```mermaid
 graph TD
-    User((User)) --> Streamlit[Streamlit Frontend]
-    Streamlit --> Crew[CrewAI Orchestrator]
+    User((User Input)) -->|Topic| Researcher[Senior Investigative Researcher]
+    Researcher -->|Tavily API| Web((The Internet))
+    Web -->|Raw Data| Researcher
+    Researcher -->|1500+ Word Research Brief| Writer[Lead Podcast Script Architect]
     
-    subgraph AI Team
-        Researcher[Senior Researcher]
-        Writer[Lead Writer]
-        Editor[Executive Editor]
-        Judge[Podcast Critic]
+    subgraph "Segmented Writing Phase"
+    Writer -->|Task 1| Intro[Intro: 500 words]
+    Writer -->|Task 2| Seg1[Origins: 600 words]
+    Writer -->|Task 3| Seg2[Deep Dive: 600 words]
+    Writer -->|Task 4| Seg3[Impact: 600 words]
+    Writer -->|Task 5| Outro[Closing: 400 words]
     end
     
-    Crew --> Researcher
-    Researcher --> Tavily[Tavily Search API]
-    Tavily --> Researcher
-    
-    Researcher --> Writer
-    Writer --> Editor
-    Editor --> Judge
-    
-    Judge --> Crew
-    Crew --> Streamlit
-    Streamlit --> User
-    
-    subgraph LLM Providers
-        Gemini[Google Gemini 1.5 Flash]
-        Ollama[Local Ollama / Gemma 3]
+    subgraph "Verification Phase"
+    Intro & Seg1 & Seg2 & Seg3 & Outro --> Judge[Podcast Critic & Judge]
+    Judge -->|Score & Critique| EvalTab[Quality Analysis Tab]
     end
     
-    Researcher -.-> Gemini
-    Writer -.-> Gemini
-    Editor -.-> Gemini
-    Judge -.-> Gemini
+    subgraph "Assembly Phase"
+    Intro & Seg1 & Seg2 & Seg3 & Outro --> PythonJoin[Python Hard-Concatenation]
+    PythonJoin -->|Bypasses LLM Truncation| FinalScript[2000+ Word Masterpiece]
+    end
+    
+    FinalScript --> Tab1[📜 Production Script Tab]
+    EvalTab --> Tab2[📊 Quality Analysis Tab]
+    Researcher --> Tab3[🔍 Research Brief Tab]
 ```
 
-## Component Breakdown
-
-### 1. Frontend (Streamlit)
-*   Handles user input (Topic, API Keys).
-*   Displays real-time status updates and final outputs.
-*   Provides download links for the generated script.
-
-### 2. Orchestration (CrewAI)
-*   Manages the state and memory between agents.
-*   Executes tasks in a sequential process (Process.sequential).
-*   Handles LLM interactions via the `LLM` class.
-
-### 3. Agents & Tools
-*   **Researcher:** Equipped with the `Tavily Search` tool for deep web searching.
-*   **Writer:** Context-aware agent that consumes research data.
-*   **Editor:** Quality control agent focused on tone and formatting.
-*   **Judge:** Implementation of the **LLM-as-Judge** pattern to provide an objective score.
-
-### 4. External Integrations
-*   **Tavily API:** Used for high-quality, AI-optimized search results.
-*   **Gemini API:** Primary cloud LLM for deployment.
-*   **Ollama (Fallback):** Supports local development and privacy-focused execution.
+## Key Components
+1. **Engine Layer:** Dual-engine support with Gemini 2.0 Flash-Lite (Primary) and local Ollama llama3.2 (Hot Fallback).
+2. **Research Layer:** Integration with Tavily API for AI-ready search results.
+3. **Writing Layer:** Recursive context passing ensures every segment is factually grounded.
+4. **UI Layer:** Streamlit-based "Producer's Desk" with typewriter-styled script preview.
+```

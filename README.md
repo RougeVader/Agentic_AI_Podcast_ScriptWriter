@@ -1,65 +1,59 @@
-# 🎙️ Multi-Agent Podcast Script Writer
+# 🎙️ Agentic AI Podcast ScriptWriter
 
-An automated pipeline for researching, writing, and evaluating high-quality conversational podcast scripts using **CrewAI**, **Tavily Search**, and **Google Gemini**.
+A professional-grade, multi-agent system designed to research, draft, and critique exhaustive (2000+ word) podcast scripts. Built with **CrewAI**, **Gemini 2.0**, and **Ollama**.
 
-## 🚀 Features
-*   **Multi-Agent Orchestration:** 4 specialized agents working in harmony (Researcher, Writer, Editor, Judge).
-*   **Real-time Research:** Integrated with **Tavily Search API** for accurate and up-to-date information.
-*   **LLM-as-Judge:** Automated quality scoring and feedback on the final script.
-*   **Hybrid LLM Support:** Use **Gemini 1.5 Flash** for speed or **Local Ollama** for privacy.
-*   **Conversational Logic:** Specifically tuned to produce natural Host/Guest banter.
+## 🚀 Submission Checklist
+- [x] **GitHub Repository:** Clean code and comprehensive README.
+- [x] **Problem Statement:** Detailed in [PROBLEM_STATEMENT.md](./PROBLEM_STATEMENT.md).
+- [x] **Task Decomposition:** Documented in [SPEC.md](./SPEC.md) and [tasks.py](./tasks.py).
+- [x] **Architecture Diagram:** Visualized in [ARCHITECTURE.md](./ARCHITECTURE.md).
+- [x] **Working Agent:** Integrated with Tavily Search, Gemini Cloud, and Local LLMs.
+- [x] **LLM-as-Judge:** Automated quality scoring and feedback loop.
+- [x] **Hot-Fallback:** Seamlessly switches to local GPU if Cloud API fails.
 
-## 🛠️ Tech Stack
-*   **Agent Framework:** [CrewAI](https://crewai.com)
-*   **Search Engine:** [Tavily AI](https://tavily.com)
-*   **Language Models:** Google Gemini 1.5 Flash / Ollama (Gemma 3)
-*   **Frontend:** Streamlit
-*   **Environment:** Python 3.10+
+## 🧠 The Problem
+Most AI writing tools produce short, generic summaries (~500 words) because of LLM output limits. This project solves that by using **Segmented Writing & Hard-Concatenation**, forcing the agents to write piece-by-piece to achieve massive, 2000+ word masterpieces with deep technical substance.
 
-## 📋 Submission Checklist Progress
-- [x] GitHub repository with clean code
-- [x] Comprehensive README
-- [x] Problem statement document (`PROBLEM_STATEMENT.md`)
-- [x] Task decomposition / spec document (`SPEC.md`)
-- [x] Architecture diagram (`ARCHITECTURE.md`)
-- [x] Working agent with API connection (Gemini + Tavily)
-- [x] LLM-as-Judge implementation
-- [ ] Deployed app - *Ready for Railway/Vercel*
+## 🛠️ Architecture
+The system employs a sophisticated workflow where each agent has a specific, high-iteration role:
+1. **Researcher:** Investigates via Tavily API to find 15+ deep facts.
+2. **Architect:** Writes five distinct 500+ word segments.
+3. **Judge:** Scores the script and identifies weaknesses.
+4. **Python Assembler:** Manually joins segments to bypass LLM truncation.
 
-## ⚙️ Setup Instructions
+> **Full Diagram:** See [ARCHITECTURE.md](./ARCHITECTURE.md) for the Mermaid flowchart.
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/YourUsername/Podcast-Script-Writer.git
-cd Podcast-Script-Writer
-```
+## 🔌 Setup Instructions
+1. **Clone the Repo:**
+   ```bash
+   git clone https://github.com/RougeVader/Agentic_AI_Podcast_ScriptWriter.git
+   cd Agentic_AI_Podcast_ScriptWriter
+   ```
 
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+2. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 3. Configure Environment Variables
-Create a `.env` file in the root directory:
-```env
-GEMINI_API_KEY=your_gemini_key
-TAVILY_API_KEY=your_tavily_key
-```
+3. **Configure Environment:**
+   Create a `.env` file with:
+   ```env
+   GEMINI_API_KEY="your_key_here"
+   TAVILY_API_KEY="your_key_here"
+   ```
 
-### 4. Run Locally
-```bash
-streamlit run app.py
-```
+4. **(Optional) Local GPU Fallback:**
+   Install [Ollama](https://ollama.com/) and run:
+   ```bash
+   ollama pull llama3.2
+   ```
 
-## 🧩 Architecture
-The system uses a sequential process where research feeds into writing, writing into editing, and editing into final judgment. See [ARCHITECTURE.md](ARCHITECTURE.md) for details.
+5. **Run the App:**
+   ```bash
+   streamlit run app.py
+   ```
 
-## 📝 Example Output
-The app generates a full markdown script formatted like this:
-> **Alex (Host):** Welcome to the show! Today we're diving into...
-> **Taylor (Expert):** Thanks Alex. It's fascinating because...
-
-Followed by a **Quality Evaluation Report** giving the script a score and improvement tips.
-
----
-*Built with ❤️ for the Antigravity AI Agent Hackathon.*
+## 🎥 Flow & Features
+- **Dual-Engine:** Uses Gemini 2.0 Flash-Lite for speed and Llama 3.2 for local privacy/fallback.
+- **Museum-Grade UI:** Streamlit "Producer's Desk" with separate tabs for Script, Analysis, and Research.
+- **Strict Word Counts:** Each segment is monitored to ensure the final product hits the 2000-word goal.
