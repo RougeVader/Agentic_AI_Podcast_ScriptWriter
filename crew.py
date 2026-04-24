@@ -9,18 +9,18 @@ from tasks import (
     write_outro_task,
     evaluate_task
 )
+import os
 
 def run_podcast_crew(topic: str):
     """
-    Attempts to run the crew and then MANUALLY joins the results 
-    to bypass LLM output limits and prevent laziness.
+    Attempts to run the crew with Grok, falls back to Ollama on error.
     """
-    print(f"--- Hard-Concatenation Mode for: {topic} ---")
     try:
-        data = execute_crew(topic, force_ollama=False)
-        return data
+        if not os.getenv("XAI_API_KEY"):
+             raise Exception("Grok API key missing")
+        return execute_crew(topic, force_ollama=False)
     except Exception as e:
-        print(f"--- Falling back to local engine: {e} ---")
+        print(f"Grok unavailable ({e}). Switching to local GPU (Ollama)...")
         return execute_crew(topic, force_ollama=True)
 
 def execute_crew(topic: str, force_ollama: bool):
@@ -57,8 +57,6 @@ def execute_crew(topic: str, force_ollama: bool):
 
     crew.kickoff(inputs={'topic': topic})
     
-    # MANUAL CONCATENATION: This is the secret to 2000+ words.
-    # We join all segment outputs in Python so the LLM never has a chance to summarize them.
     final_combined_script = (
         f"# PODCAST SCRIPT: {topic.upper()}\n\n"
         f"{task_intro.output.raw}\n\n"
@@ -68,7 +66,7 @@ def execute_crew(topic: str, force_ollama: bool):
         f"## CLOSING\n\n{task_outro.output.raw}"
     )
     
-    engine_name = "Local GPU (Ollama)" if force_ollama else "Cloud (Gemini)"
+    engine_name = "Local GPU (Ollama)" if force_ollama else "Cloud (Grok xAI)"
     
     return {
         "engine": engine_name,

@@ -24,17 +24,14 @@ def tavily_search(query: str) -> str:
         return f"Tavily Search failed: {e}"
 
 def get_llm(force_ollama=False):
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    ollama_llm = LLM(model="ollama/llama3.2", base_url="http://localhost:11434")
+    xai_key = os.getenv("XAI_API_KEY")
     
-    if force_ollama or not gemini_key:
-        return ollama_llm
-    
-    return LLM(
-        model="gemini/gemini-2.0-flash-lite", 
-        api_key=gemini_key,
-        temperature=0.7
-    )
+    if force_ollama or not xai_key:
+        # Local fallback
+        return LLM(model="ollama/llama3.2", base_url="http://localhost:11434")
+
+    # Cloud primary
+    return LLM(model="xai/grok-beta", api_key=xai_key)
 
 def create_researcher(force_ollama=False):
     return Agent(

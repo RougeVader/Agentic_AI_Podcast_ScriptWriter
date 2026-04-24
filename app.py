@@ -17,7 +17,7 @@ def check_ollama_status():
     except Exception as e:
         return False, f"Ollama check failed: {e}"
 
-st.set_page_config(page_title="Producer's Desk | Podcast Writer", page_icon="🎙️", layout="wide")
+st.set_page_config(page_title="Producer's Desk | Grok + Ollama", page_icon="🎙️", layout="wide")
 
 # Professional Script Styling
 st.markdown("""
@@ -47,12 +47,6 @@ st.markdown("""
         margin: 0 auto;
         font-size: 1.2em;
     }
-    .engine-tag {
-        font-size: 0.8em;
-        color: #4ECDC4;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -61,18 +55,21 @@ st.markdown("<h1 class='main-title'>🎙️ Producer's Desk</h1>", unsafe_allow_
 # Sidebar for Configuration
 with st.sidebar:
     st.header("⚙️ System Status")
-    gemini_key = os.getenv("GEMINI_API_KEY")
+    xai_key = os.getenv("XAI_API_KEY")
     is_ollama_running, ollama_msg = check_ollama_status()
 
-    if gemini_key:
-        st.success("🟢 Gemini 2.0 Lite: Ready")
+    if xai_key:
+        st.success("🟢 Grok (xAI): Ready")
+    else:
+        st.warning("🟡 Grok API Key Missing")
+
     if is_ollama_running:
         st.success("🟢 Local GPU (Ollama): Ready")
     else:
         st.error("🔴 Ollama Offline")
 
     st.divider()
-    st.info("This system uses 'Segmented Writing' to generate 2000+ word scripts piece-by-piece.")
+    st.info("Primary: Grok xAI | Fallback: Local Ollama")
 
 topic = st.text_input("Podcast Topic:", placeholder="e.g., The Secret History of the Roman Empire")
 
@@ -92,7 +89,6 @@ if st.button("Generate Masterpiece 🚀"):
             tab1, tab2, tab3 = st.tabs(["📜 Production Script", "📊 Quality Analysis", "🔍 Research Brief"])
             
             with tab1:
-                st.markdown(f"<div class='engine-tag'>Engine: {data['engine']}</div>", unsafe_allow_html=True)
                 st.markdown("<div class='script-container'>", unsafe_allow_html=True)
                 st.markdown(data['final_script'])
                 st.markdown("</div>", unsafe_allow_html=True)
