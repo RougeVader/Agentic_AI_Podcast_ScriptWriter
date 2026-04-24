@@ -6,3 +6,5 @@ duckduckgo-search
 python-dotenv
 tavily-python
 langchain-google-genai
+requests
+pydantic
